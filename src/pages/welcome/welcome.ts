@@ -1,3 +1,8 @@
+import {
+  GoogleMaps,
+  GoogleMap,
+  GoogleMapOptions,
+} from '@ionic-native/google-maps';
 import { Component } from '@angular/core';
 import { IonicPage, NavController } from 'ionic-angular';
 
@@ -13,14 +18,44 @@ import { IonicPage, NavController } from 'ionic-angular';
   templateUrl: 'welcome.html'
 })
 export class WelcomePage {
-
+  map: GoogleMap;
+  mapElement: HTMLElement;
   constructor(public navCtrl: NavController) { }
-
-  login() {
-    this.navCtrl.push('LoginPage');
+  ionViewDidLoad() {
+      this.loadMap();
   }
+  loadMap() {
+      this.mapElement = document.getElementById('map');
+      let mapOptions: GoogleMapOptions = {
+        controls: {
+          compass: false,
+          myLocationButton: false,
+          indoorPicker: false,
+          mapToolbar: false
+        },
+        camera: {
+          target: {
+            lat: 40.1817318,
+            lng: 44.5122556
+          },
+          zoom: 8
+        },
+        styles: [{
+          stylers: [{
+            saturation: -100
+          }]
+        }]
+      };
 
-  signup() {
-    this.navCtrl.push('SignupPage');
+      if (!this.map) {
+        console.log('map loading');
+        this.map = GoogleMaps.create(this.mapElement, mapOptions);
+        this.map.one('map_ready')
+          .then((map) => {
+            console.log(map);
+          }).catch(error => {
+          console.log('Error getting location' + JSON.stringify(error));
+        });
+      }
   }
 }
